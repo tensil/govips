@@ -57,15 +57,13 @@ type AbsParams struct {
 }
 
 // Abs executes the 'abs' operation
-func Abs2(in *C.VipsImage, options ...*Option) error {
-	var out *C.VipsImage
-	var err error
-	options = append(options,
-		InputImage("in", in),
-		OutputImage("out", &out),
-	)
+func Abs2(params AbsParams) error {
 	incOpCounter("abs")
-	return vipsCall("abs", options)
+	i := C.vips_abs(params.In, params.Out, nil)
+	if i == 0 {
+		return nil
+	}
+	return handleVipsError()
 }
 
 // Abs executes the 'abs' operation
