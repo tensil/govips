@@ -61,6 +61,8 @@ int add(VipsImage *left, VipsImage *right, VipsImage **out);
 int multiply(VipsImage *left, VipsImage *right, VipsImage **out);
 int resize_image(VipsImage *in, VipsImage **out, double scale, double vscale, int kernel);
 int rot_image(VipsImage *in, VipsImage **out, VipsAngle angle);
+VipsAngle autorot_get_angle(VipsImage *in);
+void autorot_remove_angle(VipsImage *in);
 int autorot_image(VipsImage *in, VipsImage **out);
 int flip_image(VipsImage *in, VipsImage **out, int direction);
 int shrink_image(VipsImage *in, VipsImage **out, double xshrink, double yshrink);

@@ -107,6 +107,14 @@ int rot_image(VipsImage *in, VipsImage **out, VipsAngle angle) {
   return vips_rot(in, out, angle, NULL);
 }
 
+VipsAngle autorot_get_angle(VipsImage *in) {
+  return vips_autorot_get_angle(in);
+}
+
+void autorot_remove_angle(VipsImage *in) {
+  vips_autorot_remove_angle(in);
+}
+
 int autorot_image(VipsImage *in, VipsImage **out) {
   return vips_autorot(in, out, NULL);
 }
