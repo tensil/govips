@@ -322,6 +322,16 @@ func vipsRotate(input *C.VipsImage, angle Angle) (*C.VipsImage, error) {
 	return output, nil
 }
 
+func vipsAutoRotate(input *C.VipsImage) (*C.VipsImage, error) {
+	incOpCounter("autorot")
+	var output *C.VipsImage
+	defer C.g_object_unref(C.gpointer(input))
+	if err := C.autorot_image(input, &output); err != 0 {
+		return nil, handleVipsError()
+	}
+	return output, nil
+}
+
 func vipsComposite(inputs []*C.VipsImage, mode BlendMode) (*C.VipsImage, error) {
 	incOpCounter("composite")
 	var output *C.VipsImage

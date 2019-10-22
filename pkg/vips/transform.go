@@ -30,6 +30,7 @@ type TransformParams struct {
 	ZoomY                   int
 	Invert                  bool
 	Rotate                  Angle
+	AutoRotate              bool
 	BlurSigma               float64
 	Flip                    FlipDirection
 	Width                   Scalar
@@ -194,6 +195,12 @@ func (t *Transform) GaussBlur(sigma float64) *Transform {
 // Rotate rotates image by a multiple of 90 degrees
 func (t *Transform) Rotate(angle Angle) *Transform {
 	t.tx.Rotate = angle
+	return t
+}
+
+// AutoRotate rotates image based on image metadata
+func (t *Transform) AutoRotate() *Transform {
+	t.tx.AutoRotate = true
 	return t
 }
 
@@ -693,6 +700,13 @@ func postProcess(bb *Blackboard) error {
 
 	if bb.Rotate > 0 {
 		bb.image, err = vipsRotate(bb.image, bb.Rotate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if bb.AutoRotate {
+		bb.image, err = vipsAutoRotate(bb.image)
 		if err != nil {
 			return err
 		}
