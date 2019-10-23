@@ -322,13 +322,16 @@ func vipsRotate(input *C.VipsImage, angle Angle) (*C.VipsImage, error) {
 	return output, nil
 }
 
+func vipsAutoRotateRemoveAngle(input *C.VipsImage) {
+	incOpCounter("autorot_remove")
+	C.autorot_remove_angle(input)
+}
+
 func vipsAutoRotate(input *C.VipsImage) (*C.VipsImage, error) {
 	incOpCounter("autorot")
-	angle := C.autorot_get_angle(input)
-	C.autorot_remove_angle(input)
 	var output *C.VipsImage
 	defer C.g_object_unref(C.gpointer(input))
-	if err := C.rot_image(input, &output, angle); err != 0 {
+	if err := C.autorot_image(input, &output); err != 0 {
 		return nil, handleVipsError()
 	}
 	return output, nil

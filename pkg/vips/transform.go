@@ -31,6 +31,7 @@ type TransformParams struct {
 	Invert                  bool
 	Rotate                  Angle
 	AutoRotate              bool
+	AutoRotateRemoveAngle   bool
 	BlurSigma               float64
 	Flip                    FlipDirection
 	Width                   Scalar
@@ -201,6 +202,12 @@ func (t *Transform) Rotate(angle Angle) *Transform {
 // AutoRotate rotates image based on image metadata
 func (t *Transform) AutoRotate() *Transform {
 	t.tx.AutoRotate = true
+	return t
+}
+
+// AutoRotateRemoveAngle removes rotatation metadata
+func (t *Transform) AutoRotateRemoveAngle() *Transform {
+	t.tx.AutoRotateRemoveAngle = true
 	return t
 }
 
@@ -710,6 +717,10 @@ func postProcess(bb *Blackboard) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if bb.AutoRotateRemoveAngle {
+		vipsAutoRotateRemoveAngle(bb.image)
 	}
 
 	if bb.Label != nil {
