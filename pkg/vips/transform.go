@@ -36,6 +36,8 @@ type TransformParams struct {
 	Flip                    FlipDirection
 	Width                   Scalar
 	Height                  Scalar
+	MaxWidth                int
+	MaxHeight               int
 	CropOffsetX             Scalar
 	CropOffsetY             Scalar
 	MaxScale                float64
@@ -274,6 +276,22 @@ func (t *Transform) Resize(width, height int) *Transform {
 	return t
 }
 
+func (t *Transform) MaxWidth(width int) *Transform {
+	t.tx.MaxWidth = width
+	return t
+}
+
+func (t *Transform) MaxHeight(height int) *Transform {
+	t.tx.MaxHeight = height
+	return t
+}
+
+func (t *Transform) MaxSize(width, height int) *Transform {
+	t.tx.MaxWidth = width
+	t.tx.MaxHeight = height
+	return t
+}
+
 func (t *Transform) Label(lp *LabelParams) *Transform {
 	if lp.Text == "" {
 		t.tx.Label = nil
@@ -450,6 +468,12 @@ func NewBlackboard(image *C.VipsImage, imageType ImageType, p *TransformParams) 
 
 	bb.targetWidth = p.Width.GetRounded(imageWidth)
 	bb.targetHeight = p.Height.GetRounded(imageHeight)
+	if p.MaxWidth > 0 && (bb.targetWidth > p.MaxWidth || imageWidth > p.MaxWidth) {
+		bb.targetWidth = p.MaxWidth
+	}
+	if p.MaxHeight > 0 && (bb.targetHeight > p.MaxHeight || imageHeight > p.MaxHeight) {
+		bb.targetHeight = p.MaxHeight
+	}
 
 	if bb.MaxScale > 0 {
 		if bb.targetWidth > 0 && ratio(bb.targetWidth, imageWidth) > bb.MaxScale {
