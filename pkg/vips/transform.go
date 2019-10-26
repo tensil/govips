@@ -468,11 +468,23 @@ func NewBlackboard(image *C.VipsImage, imageType ImageType, p *TransformParams) 
 
 	bb.targetWidth = p.Width.GetRounded(imageWidth)
 	bb.targetHeight = p.Height.GetRounded(imageHeight)
-	if p.MaxWidth > 0 && (bb.targetWidth > p.MaxWidth || imageWidth > p.MaxWidth) {
-		bb.targetWidth = p.MaxWidth
+	if p.MaxWidth > 0 {
+		if bb.targetWidth > p.MaxWidth {
+			bb.targetWidth = p.MaxWidth
+		}
+		if imageWidth > p.MaxWidth {
+			p.Width.SetInt(p.MaxWidth)
+			bb.targetWidth = p.MaxWidth
+		}
 	}
-	if p.MaxHeight > 0 && (bb.targetHeight > p.MaxHeight || imageHeight > p.MaxHeight) {
-		bb.targetHeight = p.MaxHeight
+	if p.MaxHeight > 0 {
+		if bb.targetHeight > p.MaxHeight {
+			bb.targetHeight = p.MaxHeight
+		}
+		if imageHeight > p.MaxHeight {
+			p.Height.SetInt(p.MaxHeight)
+			bb.targetHeight = p.MaxHeight
+		}
 	}
 
 	if bb.MaxScale > 0 {
