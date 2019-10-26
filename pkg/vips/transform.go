@@ -462,29 +462,17 @@ func NewBlackboard(image *C.VipsImage, imageType ImageType, p *TransformParams) 
 	bb.cropOffsetX = p.CropOffsetX.GetRounded(imageWidth)
 	bb.cropOffsetY = p.CropOffsetY.GetRounded(imageHeight)
 
-	if p.Width.Value == 0 && p.Height.Value == 0 {
+	if p.Width.Value == 0 && p.Height.Value == 0 && p.MaxWidth == 0 && p.MaxHeight == 0 {
 		return bb
 	}
 
 	bb.targetWidth = p.Width.GetRounded(imageWidth)
 	bb.targetHeight = p.Height.GetRounded(imageHeight)
-	if p.MaxWidth > 0 {
-		if bb.targetWidth > p.MaxWidth {
-			bb.targetWidth = p.MaxWidth
-		}
-		if imageWidth > p.MaxWidth {
-			p.Width.SetInt(p.MaxWidth)
-			bb.targetWidth = p.MaxWidth
-		}
+	if p.MaxWidth > 0 && (bb.targetWidth > p.MaxWidth || imageWidth > p.MaxWidth) {
+		bb.targetWidth = p.MaxWidth
 	}
-	if p.MaxHeight > 0 {
-		if bb.targetHeight > p.MaxHeight {
-			bb.targetHeight = p.MaxHeight
-		}
-		if imageHeight > p.MaxHeight {
-			p.Height.SetInt(p.MaxHeight)
-			bb.targetHeight = p.MaxHeight
-		}
+	if p.MaxHeight > 0 && (bb.targetHeight > p.MaxHeight || imageHeight > p.MaxHeight) {
+		bb.targetHeight = p.MaxHeight
 	}
 
 	if bb.MaxScale > 0 {
