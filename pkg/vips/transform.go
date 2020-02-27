@@ -232,6 +232,12 @@ func (t *Transform) Stretch() *Transform {
 	return t
 }
 
+// Fill an image maintaining aspect ratio filling and overflowing to MaxWidth x MaxHeight
+func (t *Transform) Fill() *Transform {
+	t.tx.ResizeStrategy = ResizeStrategyFill
+	return t
+}
+
 // ScaleWidth scales the image by its width proportionally
 func (t *Transform) ScaleWidth(scale float64) *Transform {
 	t.tx.Width.SetScale(scale)
@@ -468,6 +474,17 @@ func NewBlackboard(image *C.VipsImage, imageType ImageType, p *TransformParams) 
 
 	bb.targetWidth = p.Width.GetRounded(imageWidth)
 	bb.targetHeight = p.Height.GetRounded(imageHeight)
+	if p.ResizeStrategy == ResizeStrategyFill {
+		// fill is basically auto, but uses Max sizes to determine final size
+		// just remove the MaxWidth or MaxHeight accordingly
+		if p.MaxWidth > 0 && p.MaxHeight > 0 {
+			if bb.aspectRatio > ratio(p.MaxWidth, p.MaxHeight) {
+				p.MaxWidth = 0
+			} else {
+				p.MaxHeight = 0
+			}
+		}
+	}
 	if p.MaxWidth > 0 && (bb.targetWidth > p.MaxWidth || imageWidth > p.MaxWidth) {
 		bb.targetWidth = p.MaxWidth
 	}
