@@ -19,6 +19,7 @@ const (
 	ResizeStrategyEmbed
 	ResizeStrategyCrop
 	ResizeStrategyStretch
+	ResizeStrategyFill
 )
 
 // ExportParams are options when exporting an image to file or buffer

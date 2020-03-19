@@ -232,6 +232,12 @@ func (t *Transform) Stretch() *Transform {
 	return t
 }
 
+// Fill an image maintaining aspect ratio filling and overflowing to MaxWidth x MaxHeight
+func (t *Transform) Fill() *Transform {
+	t.tx.ResizeStrategy = ResizeStrategyFill
+	return t
+}
+
 // ScaleWidth scales the image by its width proportionally
 func (t *Transform) ScaleWidth(scale float64) *Transform {
 	t.tx.Width.SetScale(scale)
@@ -462,29 +468,28 @@ func NewBlackboard(image *C.VipsImage, imageType ImageType, p *TransformParams) 
 	bb.cropOffsetX = p.CropOffsetX.GetRounded(imageWidth)
 	bb.cropOffsetY = p.CropOffsetY.GetRounded(imageHeight)
 
-	if p.Width.Value == 0 && p.Height.Value == 0 {
+	if p.Width.Value == 0 && p.Height.Value == 0 && p.MaxWidth == 0 && p.MaxHeight == 0 {
 		return bb
 	}
 
 	bb.targetWidth = p.Width.GetRounded(imageWidth)
 	bb.targetHeight = p.Height.GetRounded(imageHeight)
-	if p.MaxWidth > 0 {
-		if bb.targetWidth > p.MaxWidth {
-			bb.targetWidth = p.MaxWidth
-		}
-		if imageWidth > p.MaxWidth {
-			p.Width.SetInt(p.MaxWidth)
-			bb.targetWidth = p.MaxWidth
+	if p.ResizeStrategy == ResizeStrategyFill {
+		// fill is basically auto, but uses Max sizes to determine final size
+		// just remove the MaxWidth or MaxHeight accordingly
+		if p.MaxWidth > 0 && p.MaxHeight > 0 {
+			if bb.aspectRatio > ratio(p.MaxWidth, p.MaxHeight) {
+				p.MaxWidth = 0
+			} else {
+				p.MaxHeight = 0
+			}
 		}
 	}
-	if p.MaxHeight > 0 {
-		if bb.targetHeight > p.MaxHeight {
-			bb.targetHeight = p.MaxHeight
-		}
-		if imageHeight > p.MaxHeight {
-			p.Height.SetInt(p.MaxHeight)
-			bb.targetHeight = p.MaxHeight
-		}
+	if p.MaxWidth > 0 && (bb.targetWidth > p.MaxWidth || imageWidth > p.MaxWidth) {
+		bb.targetWidth = p.MaxWidth
+	}
+	if p.MaxHeight > 0 && (bb.targetHeight > p.MaxHeight || imageHeight > p.MaxHeight) {
+		bb.targetHeight = p.MaxHeight
 	}
 
 	if bb.MaxScale > 0 {
