@@ -73,6 +73,8 @@ int extract_image_area(VipsImage *in, VipsImage **out, int left, int top, int wi
 int flatten_image_background(VipsImage *in, VipsImage **out, double r, double g, double b);
 int transform_image(VipsImage *in, VipsImage **out, double a, double b, double c, double d, VipsInterpolate *interpolator);
 int gaussian_blur(VipsImage *in, VipsImage **out, double sigma);
+int join(VipsImage *in1, VipsImage *in2, VipsImage **out, int direction);
+int arrayjoin(VipsImage **in, VipsImage **out, int n, int across);
 int invert_image(VipsImage *in, VipsImage **out);
 int composite(VipsImage **in, VipsImage **out, int n, int mode);
 int label(VipsImage *in, VipsImage **out, LabelOptions *o);

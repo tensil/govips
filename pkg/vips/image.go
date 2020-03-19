@@ -174,6 +174,31 @@ func (ref *ImageRef) Composite(overlay *ImageRef, mode BlendMode) error {
 	return nil
 }
 
+// Join joins this image with another in the direction specified
+func (ref *ImageRef) Join(in *ImageRef, dir Direction) error {
+	out, err := vipsJoin(ref.image, in.image, C.int(dir))
+	if err != nil {
+		return err
+	}
+	ref.SetImage(out)
+	return nil
+}
+
+// ArrayJoin joins an array of images together wrapping at each n images
+func (ref *ImageRef) ArrayJoin(images []*ImageRef, across int) error {
+	allImages := append([]*ImageRef{ref.image}, images...)
+	inputs := make([]*C.VipsImage, len(allImages))
+	for i := range inputs {
+		inputs[i] = allImages[i]
+	}
+	out, err := vipsArrayJoin(inputs, across)
+	if err != nil {
+		return err
+	}
+	ref.SetImage(out)
+	return nil
+}
+
 // Export exports the image
 func (ref *ImageRef) Export(params ExportParams) ([]byte, ImageType, error) {
 	if params.Format == ImageTypeUnknown {

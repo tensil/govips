@@ -442,6 +442,26 @@ func vipsGaussianBlur(input *C.VipsImage, sigma float64) (*C.VipsImage, error) {
 	return output, nil
 }
 
+func vipsJoin(input1 *C.VipsImage, input2 *C.VipsImage, dir Direction) (*C.VipsImage, error) {
+	incOpCounter("join")
+	var output *C.VipsImage
+	defer C.g_object_unref(C.gpointer(input1))
+	defer C.g_object_unref(C.gpointer(input2))
+	if err := C.join(input1, input2, &output, C.int(dir)); err != 0 {
+		return nil, handleVipsError()
+	}
+	return output, nil
+}
+
+func vipsArrayJoin(inputs []*C.VipsImage, across int) (*C.VipsImage, error) {
+	incOpCounter("arrayjoin")
+	var output *C.VipsImage
+	if err := C.arrayjoin(&inputs[0], &output, C.int(len(inputs)), C.int(across)); err != 0 {
+		return nil, handleVipsError()
+	}
+	return output, nil
+}
+
 func vipsZoom(input *C.VipsImage, xFactor, yFactor int) (*C.VipsImage, error) {
 	incOpCounter("zoom")
 	var output *C.VipsImage
