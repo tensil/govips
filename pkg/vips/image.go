@@ -176,7 +176,7 @@ func (ref *ImageRef) Composite(overlay *ImageRef, mode BlendMode) error {
 
 // Join joins this image with another in the direction specified
 func (ref *ImageRef) Join(in *ImageRef, dir Direction) error {
-	out, err := vipsJoin(ref.image, in.image, C.int(dir))
+	out, err := vipsJoin(ref.image, in.image, dir)
 	if err != nil {
 		return err
 	}
@@ -186,10 +186,10 @@ func (ref *ImageRef) Join(in *ImageRef, dir Direction) error {
 
 // ArrayJoin joins an array of images together wrapping at each n images
 func (ref *ImageRef) ArrayJoin(images []*ImageRef, across int) error {
-	allImages := append([]*ImageRef{ref.image}, images...)
+	allImages := append([]*ImageRef{ref}, images...)
 	inputs := make([]*C.VipsImage, len(allImages))
 	for i := range inputs {
-		inputs[i] = allImages[i]
+		inputs[i] = allImages[i].image
 	}
 	out, err := vipsArrayJoin(inputs, across)
 	if err != nil {
