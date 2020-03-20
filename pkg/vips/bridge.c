@@ -148,7 +148,7 @@ int join(VipsImage *in1, VipsImage *in2, VipsImage **out, int direction) {
 }
 
 int arrayjoin(VipsImage **in, VipsImage **out, int n, int across) {
-  return vips_arrayjoin(in, out, n, "across", across);
+  return vips_arrayjoin(in, out, n, "across", across, NULL);
 }
 
 int invert_image(VipsImage *in, VipsImage **out) {

@@ -406,6 +406,31 @@ func (t *Transform) Apply() ([]byte, ImageType, error) {
 	return t.exportImage(transformed, imageType)
 }
 
+// ApplyMemory loads the image, applies the transform, and returns the transformed ImageRef
+func (t *Transform) ApplyMemory() (*ImageRef, error) {
+	defer ShutdownThread()
+	defer func() {
+		t.source = nil
+	}()
+	startupIfNeeded()
+
+	input, imageType, err := t.importImage()
+	if err != nil {
+		return nil, err
+	}
+	if input == nil {
+		return nil, errors.New("vips: image not found")
+	}
+
+	transformed, err := t.transform(input, imageType)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewImageRef(transformed, imageType), nil
+}
+
 func (t *Transform) importImage() (*C.VipsImage, ImageType, error) {
 	if t.input.Image != nil {
 		copy, err := vipsCopyImage(t.input.Image.image)
