@@ -428,6 +428,8 @@ func (t *Transform) ApplyMemory() (*ImageRef, error) {
 		return nil, err
 	}
 
+	defer C.g_object_unref(C.gpointer(transformed))
+
 	return NewImageRef(transformed, imageType), nil
 }
 
