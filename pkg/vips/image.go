@@ -81,9 +81,9 @@ func NewImageFromBuffer(buf []byte, opts ...LoadOption) (*ImageRef, error) {
 func NewImageFromMemory(buf []byte, width int, height int, bands int) (*ImageRef, error) {
 	startupIfNeeded()
 
-	image := vipsLoadFromMemory(buf, width, height, bands)
-	if image == nil {
-		return nil, errors.New("vipsLoadFromMemory returned nil")
+	image, err := vipsLoadFromMemory(buf, width, height, bands)
+	if err != nil {
+		return nil, err
 	}
 
 	ref := NewImageRef(image, ImageTypeUnknown)
