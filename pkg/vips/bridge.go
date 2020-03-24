@@ -162,6 +162,16 @@ func vipsCopyImage(input *C.VipsImage) (*C.VipsImage, error) {
 	return output, nil
 }
 
+func vipsLoadFromMemory(buf []byte, width int, height int, bands int) (*C.VipsImage) {
+	// Reference buf here so it's not garbage collected during image initialization.
+	defer runtime.KeepAlive(buf)
+
+	len := C.size_t(len(buf))
+	imageBuf := unsafe.Pointer(&buf[0])
+
+	return C.image_new_from_memory(imageBuf, len, C.int(width), C.int(height), C.int(bands), C.VIPS_FORMAT_UCHAR)
+}
+
 func vipsExportBuffer(image *C.VipsImage, params *ExportParams) ([]byte, ImageType, error) {
 	tmpImage, err := vipsPrepareForExport(image, params)
 

@@ -55,6 +55,10 @@ int copy_image(VipsImage *in, VipsImage **out) {
 	return vips_copy(in, out, NULL);
 }
 
+VipsImage* image_new_from_memory(const void *data, size_t size, int width, int height, int bands, VipsBandFormat format) {
+  return vips_image_new_from_memory(data, size, width, height, bands, format);
+}
+
 int save_jpeg_buffer(VipsImage *in, void **buf, size_t *len, int strip, int quality, int interlace) {
 	return vips_jpegsave_buffer(in, buf, len,
 		"strip", INT_TO_GBOOLEAN(strip),
