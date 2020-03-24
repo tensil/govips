@@ -169,7 +169,7 @@ func vipsLoadFromMemory(buf []byte, width int, height int, bands int) (*C.VipsIm
 	len := C.size_t(len(buf))
 	imageBuf := unsafe.Pointer(&buf[0])
 
-	image := C.image_new_from_memory(imageBuf, len, C.int(width), C.int(height), C.int(bands), C.VIPS_FORMAT_UCHAR)
+	image := C.image_new_from_memory_copy(imageBuf, len, C.int(width), C.int(height), C.int(bands), C.VIPS_FORMAT_UCHAR)
 	if image == nil {
 		return nil, handleVipsError()
 	}
